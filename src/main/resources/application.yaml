@@ -1,13 +1,11 @@
 spring:
   application:
     name: fpl-wager-backend
-
   datasource:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,13 +14,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+  open-in-view: false
+
+jwt:
+  secret: ${JWT_SECRET}
 
 server:
   port: 8080
-  servlet:
-    context-path: /
 
-app:
-  jwt:
-    secret: ${JWT_SECRET}
-    expiration: 3600000
+logging:
+  level:
+    org.springframework.security: DEBUG
