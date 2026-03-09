@@ -100,6 +100,36 @@ public class WagerService {
                 .toList();
     }
 
+    @Transactional
+    public WagerResponse resolveWager(String username, Long wagerId, Long winnerId) {
+        User user = getUser(username);
+        Wager wager = wagerRepository.findById(wagerId)
+                .orElseThrow(() -> new IllegalArgumentException("Wager not found"));
+
+        if (!wager.getProposer().getId().equals(user.getId()) &&
+                !wager.getOpponent().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("You are not part of this wager");
+        }
+
+        if (wager.getStatus() != WagerStatus.ACCEPTED &&
+                wager.getStatus() != WagerStatus.ACTIVE) {
+            throw new IllegalArgumentException("Wager cannot be resolved in its current state");
+        }
+
+        User winner = userRepository.findById(winnerId)
+                .orElseThrow(() -> new IllegalArgumentException("Winner not found"));
+
+        if (!winner.getId().equals(wager.getProposer().getId()) &&
+                !winner.getId().equals(wager.getOpponent().getId())) {
+            throw new IllegalArgumentException("Winner must be a participant in the wager");
+        }
+
+        wager.setWinner(winner);
+        wager.setStatus(WagerStatus.COMPLETED);
+
+        return toWagerResponse(wagerRepository.save(wager));
+    }
+
     private WagerResponse toWagerResponse(Wager wager) {
         return WagerResponse.builder()
                 .id(wager.getId())

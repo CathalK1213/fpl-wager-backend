@@ -46,4 +46,12 @@ public class WagerController {
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(wagerService.getMyWagers(userDetails.getUsername()));
     }
+
+    @PostMapping("/{wagerId}/resolve")
+    public ResponseEntity<WagerResponse> resolveWager(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long wagerId,
+            @RequestParam Long winnerId) {
+        return ResponseEntity.ok(wagerService.resolveWager(userDetails.getUsername(), wagerId, winnerId));
+    }
 }
