@@ -1,5 +1,6 @@
 package com.fplwager.backend.client;
 
+import com.fplwager.backend.dto.FplBootstrapResponse;
 import com.fplwager.backend.dto.FplEntryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,18 @@ public class FplApiClient {
                     .body(FplEntryResponse.class);
         } catch (Exception e) {
             log.error("Failed to fetch FPL entry for team {}: {}", teamId, e.getMessage());
+            return null;
+        }
+    }
+
+    public FplBootstrapResponse getBootstrapStatic() {
+        try {
+            return restClient.get()
+                    .uri("/bootstrap-static/")
+                    .retrieve()
+                    .body(FplBootstrapResponse.class);
+        } catch (Exception e) {
+            log.error("Failed to fetch FPL bootstrap: {}", e.getMessage());
             return null;
         }
     }
