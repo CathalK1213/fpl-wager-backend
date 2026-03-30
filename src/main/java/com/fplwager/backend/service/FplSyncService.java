@@ -1,6 +1,8 @@
 package com.fplwager.backend.service;
 
 import com.fplwager.backend.client.FplApiClient;
+import com.fplwager.backend.dto.FplBootstrapResponse;
+import com.fplwager.backend.dto.FplEventDto;
 import com.fplwager.backend.dto.FplEntryResponse;
 import com.fplwager.backend.model.FplScore;
 import com.fplwager.backend.model.User;
@@ -63,5 +65,20 @@ public class FplSyncService {
                 user.getUsername(), entry.getCurrentEvent(), score.getPoints());
 
         return entry;
+    }
+
+    public Integer getCurrentGameweek() {
+        try {
+            FplBootstrapResponse bootstrap = fplApiClient.getBootstrapStatic();
+            if (bootstrap == null || bootstrap.getEvents() == null) return null;
+            return bootstrap.getEvents().stream()
+                    .filter(e -> Boolean.TRUE.equals(e.getIsCurrent()))
+                    .findFirst()
+                    .map(FplEventDto::getId)
+                    .orElse(null);
+        } catch (Exception e) {
+            log.warn("Could not fetch current gameweek: {}", e.getMessage());
+            return null;
+        }
     }
 }
